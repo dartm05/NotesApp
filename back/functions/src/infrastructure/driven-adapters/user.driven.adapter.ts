@@ -4,7 +4,7 @@ import { IUser } from "../../domain/models/user/user";
 
 export class UserDrivenAdapter implements IUserUseCase {
   async create(user: IUser): Promise<void> {
-    await db.collection("users").doc(user.id).set(user);
+    await db.collection("users").add(user);
   }
 
   async findUserByEmail(email: string): Promise<IUser | undefined> {
