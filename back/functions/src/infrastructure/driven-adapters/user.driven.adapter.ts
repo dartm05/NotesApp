@@ -12,6 +12,6 @@ export class UserDrivenAdapter implements IUserUseCase {
     if (user.empty) {
       return undefined;
     }
-    return user.docs[0].data() as IUser;
+    return { ...user.docs[0].data(), id: user.docs[0].id } as IUser;
   }
 }

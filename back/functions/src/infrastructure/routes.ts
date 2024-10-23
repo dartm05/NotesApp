@@ -4,6 +4,8 @@ import taskApp from "./routes/task.routes";
 import userApp from "./routes/user.routes";
 
 const appRoutes = express();
+var cors = require("cors");
+appRoutes.use(cors());
 appRoutes.use("/", taskApp);
 appRoutes.use("/users", userApp);
 
