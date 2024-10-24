@@ -4,7 +4,7 @@ import { ITaskUseCase } from "../../domain/usecases/task/task.usecase";
 export class TaskService implements ITaskUseCase {
   constructor(private taskDrivenAdapter: ITaskUseCase) {}
 
-  create(userId: string, task: ITask): Promise<void> {
+  create(userId: string, task: ITask): Promise<ITask | undefined> {
     return this.taskDrivenAdapter.create(userId, task);
   }
 

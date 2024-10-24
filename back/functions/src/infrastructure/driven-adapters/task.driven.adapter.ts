@@ -3,8 +3,16 @@ import { ITask } from "../../domain/models/task/task";
 import { db } from "../../index";
 
 export class TaskDrivenAdapter implements ITaskUseCase {
-  async create(userId: string, task: ITask): Promise<void> {
-    await db.collection("users").doc(userId).collection("tasks").add(task);
+  async create(userId: string, task: ITask): Promise<ITask | undefined> {
+    const newTask = await db
+      .collection("users")
+      .doc(userId)
+      .collection("tasks")
+      .add(task)
+      .then((docRef) => {
+        return { ...task, id: docRef.id };
+      });
+    return newTask;
   }
 
   async findAll(userId: string): Promise<ITask[]> {
