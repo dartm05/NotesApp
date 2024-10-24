@@ -8,6 +8,7 @@ taskApp.get('/:userId/tasks', TaskController.findAll);
 taskApp.get('/:userId/tasks/:id', TaskController.findOne);
 taskApp.post('/:userId/tasks', TaskController.create);
 taskApp.put('/:userId/tasks/:id', TaskController.update);
+taskApp.delete('/:userId/tasks/:id', TaskController.remove);
 
 
 export default taskApp;
