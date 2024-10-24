@@ -1,5 +1,9 @@
+@if(error()){
+<app-modal-dialog title="Error" [message]="error()"></app-modal-dialog>
+}
 <html class="h-full bg-white">
   <body class="h-full">
+    <app-header />
     <router-outlet />
   </body>
 </html>
