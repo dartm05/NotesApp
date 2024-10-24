@@ -9,6 +9,8 @@ export class TaskController {
     res: Response
   ): Promise<void> {
     const taskService = serviceInjection();
+    const createdAt = new Date().toISOString();
+    body = { ...body, createdAt : createdAt };
     const success = await taskService.create(userId, body);
     res.json(success);
   }
@@ -18,7 +20,9 @@ export class TaskController {
     res: Response
   ): Promise<void> {
     const taskService = serviceInjection();
-    const tasks = await taskService.findAll(userId);
+    const tasks = (await taskService.findAll(userId)).sort((a, b) => {
+      return a.createdAt > b.createdAt ? 1 : -1;
+    });
     res.json(tasks);
   }
 
