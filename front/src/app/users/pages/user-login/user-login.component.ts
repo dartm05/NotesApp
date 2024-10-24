@@ -1,6 +1,8 @@
-import { Component, input } from "@angular/core";
+import { Component, input, output } from "@angular/core";
 import { UsersService } from "../../services/users.service";
 import { UserFormComponent } from "../../components/user-form/user-form.component";
+import { FormGroup, FormControl, Validators } from "@angular/forms";
+import { AuthStateService } from "../../../shared/services/auth/auth.state.service";
 
 @Component({
   selector: "app-user-login",
@@ -10,7 +12,13 @@ import { UserFormComponent } from "../../components/user-form/user-form.componen
   styleUrl: "./user-login.component.css",
 })
 export class UserLoginComponent {
-  constructor(private userService: UsersService) {}
+  constructor(private authStateService: AuthStateService) {}
+
+  submitted = input<boolean>();
+
+  formGroup: FormGroup = new FormGroup({
+    email: new FormControl("", [Validators.required, Validators.email]),
+  });
 
   formTitle: string = "Sign in to your account";
   formButtonText: string = "Sign In";
@@ -27,4 +35,8 @@ export class UserLoginComponent {
       required: true,
     },
   ];
+
+  onSubmit() {
+    this.authStateService.siginIn(this.formGroup.value.email);
+  }
 }

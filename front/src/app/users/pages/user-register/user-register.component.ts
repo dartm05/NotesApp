@@ -1,5 +1,7 @@
 import { Component, input } from "@angular/core";
 import { UserFormComponent } from "../../components/user-form/user-form.component";
+import { FormGroup, FormControl, Validators } from "@angular/forms";
+import { AuthStateService } from "../../../shared/services/auth/auth.state.service";
 
 @Component({
   selector: "app-user-register",
@@ -9,6 +11,12 @@ import { UserFormComponent } from "../../components/user-form/user-form.componen
   styleUrl: "./user-register.component.css",
 })
 export class UserRegisterComponent {
+  constructor(public authStateService: AuthStateService) {}
+  formGroup: FormGroup = new FormGroup({
+    name: new FormControl("", [Validators.required]),
+    email: new FormControl("", [Validators.required, Validators.email]),
+  });
+  submitted = input<boolean>();
   formTitle: string = "Register";
   formButtonText: string = "Sign up";
   formLinkText: string = "Login";
@@ -32,4 +40,10 @@ export class UserRegisterComponent {
       required: true,
     },
   ];
+
+  onSubmit() {
+    if (this.formGroup.valid) {
+      this.authStateService.createUser(this.formGroup.value);
+    }
+  }
 }
