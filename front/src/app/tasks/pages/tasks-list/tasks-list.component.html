@@ -1,1 +1,29 @@
-<p>tasks-list works!</p>
+<div class="bg-white">
+  <div
+    class="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8"
+  >
+    <h2 class="text-2xl font-bold tracking-tight text-gray-900">Tasks List</h2>
+    <div class="text-end">
+      <button
+        (click)="onAddTask()"
+        class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      >
+        Create Task
+      </button>
+    </div>
+    <div
+      class="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8"
+    >
+      @if (isAddTask) {
+      <app-task-create userId="ssss" (close)="onClose()"></app-task-create>
+      } @for (task of tasks(); track "id") {
+      <app-task
+        [task]="task"
+        (deleteTask)="onDeleteTask(task)"
+        (startEdit)="onEditTask(task)"
+        (updateTask)="onDoneTask(task)"
+      ></app-task>
+      }
+    </div>
+  </div>
+</div>
