@@ -14,13 +14,7 @@ export class AuthStateService {
     private router: Router,
     private errorService: ErrorService
   ) {}
-  state = signal<User>(
-    {
-      id: undefined,
-      email: undefined,
-      name: undefined,
-    } || undefined
-  );
+  state = signal<User | undefined>(undefined);
   state$ = this.state.asReadonly();
 
   siginIn(email: string) {
@@ -35,17 +29,12 @@ export class AuthStateService {
   }
 
   signOut() {
-    this.state.set({
-      id: undefined,
-      name: undefined,
-      email: undefined,
-    });
+    this.state.set(undefined);
     this.router.navigate(["login"]);
   }
 
   createUser(user: User) {
     this.authService.createUser(user).subscribe((user) => {
-      console.log(`usuario${user}`);
       if (user) {
         this.state.set(user);
         this.router.navigate(["tasks"]);

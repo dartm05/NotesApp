@@ -1,5 +1,6 @@
-import { Component, computed } from "@angular/core";
+import { Component, effect } from "@angular/core";
 import { AuthStateService } from "../../services/auth/auth.state.service";
+import { User } from "../../models/auth/user.model";
 
 @Component({
   selector: "app-header",
@@ -9,14 +10,17 @@ import { AuthStateService } from "../../services/auth/auth.state.service";
   styleUrl: "./header.component.css",
 })
 export class HeaderComponent {
-  constructor(public authStateService: AuthStateService) {}
+  user: User | undefined;
+  constructor(public authStateService: AuthStateService) {
+    effect(() => {
+      this.user = this.authStateService.state$();
+    });
+  }
 
   headerText: string = "Tasks App";
 
-  user = this.authStateService.state$;
-
   onAction() {
-    if (this.authStateService.state()) {
+    if (this.authStateService.state$()) {
       this.authStateService.signOut();
     }
   }

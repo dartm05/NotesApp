@@ -9,11 +9,11 @@
     </div>
 
     <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-      @if(!user().email){<a
-        href="login"
+      @if(!user){<a
         class="text-sm font-semibold leading-6 text-gray-900"
+        href="login"
         >Log In <span aria-hidden="true">&rarr;</span></a
-      >} @if(user().email){<a
+      >} @else{<a
         (click)="onAction()"
         class="text-sm font-semibold leading-6 text-gray-900"
         >Log out <span aria-hidden="true">&rarr;</span></a
