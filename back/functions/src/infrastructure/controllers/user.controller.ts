@@ -5,8 +5,9 @@ import { UserDrivenAdapter } from "../driven-adapters/user.driven.adapter";
 export class UserController {
   static async create({ body }: Request, res: Response): Promise<void> {
     const userService = serviceInjection();
-    const success = await userService.create(body);
-    res.json(success);
+    await userService.create(body);
+    const user = await userService.findUserByEmail(body.email);
+    res.json(user);
   }
 
   static async findOne(
