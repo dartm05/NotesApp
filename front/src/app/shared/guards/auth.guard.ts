@@ -14,9 +14,12 @@ export class AuthGuardService {
     private authStateService: AuthStateService,
     private router: Router
   ) {
-    effect(() => {
-      this.user.set(this.authStateService.state$());
-    });
+    effect(
+      () => {
+        this.user.set(this.authStateService.state$());
+      },
+      { allowSignalWrites: true }
+    );
   }
   user = signal<User | undefined>(undefined);
 
