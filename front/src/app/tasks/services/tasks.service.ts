@@ -71,7 +71,7 @@ export class TasksService {
   }
 
   updateTask(task: Task): Observable<Task> {
-    return this.http.put<Task>(`${this.tasksUrl}/${task.id}`, task).pipe(
+    return this.http.put<Task>(`${this.tasksUrl()}/${task.id}`, task).pipe(
       catchError((error: any) => {
         this.errorService.setError(error);
         throw error;
@@ -84,7 +84,7 @@ export class TasksService {
     this.tasks.update((prevtasks) =>
       prevtasks.filter((prevtask) => prevtask.id !== task.id)
     );
-    return this.http.delete<Task>(`${this.tasksUrl}/${task.id}`).pipe(
+    return this.http.delete<Task>(`${this.tasksUrl()}/${task.id}`).pipe(
       catchError((error: any) => {
         this.tasks.set(prevtasks);
         this.errorService.setError(error);

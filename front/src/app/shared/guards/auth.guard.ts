@@ -1,10 +1,8 @@
 import { effect, Injectable, signal } from "@angular/core";
-import {
-  ActivatedRouteSnapshot,
-  Router,
-  RouterStateSnapshot,
-} from "@angular/router";
+
+import { Router } from "@angular/router";
 import { Observable } from "rxjs";
+
 import { AuthStateService } from "../services/auth/auth.state.service";
 import { User } from "../models/auth/user.model";
 
@@ -23,7 +21,8 @@ export class AuthGuardService {
   user = signal<User | undefined>(undefined);
 
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
-    if (!this.user) {
+    const token = localStorage.getItem("token");
+    if (!this.user || !token) {
       this.router.navigate(["login"]);
     }
     return true;

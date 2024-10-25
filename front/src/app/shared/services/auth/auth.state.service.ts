@@ -1,4 +1,4 @@
-import { Injectable, signal } from "@angular/core";
+import { effect, Injectable, signal } from "@angular/core";
 import { User } from "../../models/auth/user.model";
 import { AuthService } from "./auth.service";
 import { Router } from "@angular/router";
@@ -13,8 +13,23 @@ export class AuthStateService {
     private router: Router,
     private errorService: ErrorService
   ) {}
-  state = signal<User | undefined>(undefined);
+
+  private getUserFromLocalStorage(): User | undefined {
+    const token = localStorage.getItem("token");
+    return token ? (JSON.parse(token) as User) : undefined;
+  }
+
+  state = signal<User | undefined>(this.getUserFromLocalStorage());
   state$ = this.state.asReadonly();
+
+  syncStorage = effect(() => {
+    const user = this.state();
+    if (user) {
+      localStorage.setItem("token", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("token");
+    }
+  });
 
   siginIn(email: string) {
     this.authService.getUser(email).subscribe((user) => {
@@ -29,6 +44,7 @@ export class AuthStateService {
 
   signOut() {
     this.state.set(undefined);
+    localStorage.removeItem("token");
     this.router.navigate(["login"]);
   }
 
