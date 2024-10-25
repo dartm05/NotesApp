@@ -2,15 +2,11 @@ import {
   Component,
   ContentChild,
   effect,
-  ElementRef,
   input,
-  output,
   signal,
   TemplateRef,
 } from "@angular/core";
 
-import { ViewModeDirective } from "./directives/view-mode.directive";
-import { EditModeDirective } from "./directives/edit-mode.directive";
 import { CommonModule } from "@angular/common";
 
 @Component({
