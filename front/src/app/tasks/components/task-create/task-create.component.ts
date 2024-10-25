@@ -12,7 +12,6 @@ import { FormsModule } from "@angular/forms";
 export class TaskCreateComponent {
   constructor(private tasksService: TasksService) {}
 
-  @Input({ required: true }) userId!: string;
   @Output() close = new EventEmitter<void>();
   enteredTitle = "";
   description = "";

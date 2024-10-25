@@ -2,11 +2,18 @@ import { Component, effect, input, Input, output, signal } from "@angular/core";
 import { Task } from "../../models/task.model";
 import { CardComponent } from "../../../shared/components/card/card.component";
 import { DatePipe } from "@angular/common";
+import { FormBuilder, FormGroup, ReactiveFormsModule } from "@angular/forms";
+import { EditableFieldComponent } from "../editable-field/editable-field.component";
 
 @Component({
   selector: "app-task",
   standalone: true,
-  imports: [CardComponent, DatePipe],
+  imports: [
+    CardComponent,
+    DatePipe,
+    EditableFieldComponent,
+    ReactiveFormsModule,
+  ],
   templateUrl: "./task.component.html",
   styleUrl: "./task.component.css",
 })
@@ -19,23 +26,41 @@ export class TaskComponent {
 
   startEdit = output<boolean>();
   deleteTask = output<boolean>();
-  updateTask = output<boolean>();
+  updateTask = output<any>();
+  completeTask = output<boolean>();
 
-  constructor() {
+  form: FormGroup;
+
+  constructor(private fb: FormBuilder) {
+    this.form = this.fb.group({
+      title: [""],
+      description: [""],
+    });
+
     effect(
       () => {
         const currentTask = this.task();
         if (currentTask) {
-          this.buttonText.set(currentTask.done ? "Open" : "Complete");
           this.status.set(currentTask.done ? "Done" : "Pending");
+          this.form.patchValue({
+            title: currentTask.title,
+            description: currentTask.description,
+          });
         }
       },
       { allowSignalWrites: true }
     );
   }
 
+  get title() {
+    return this.form.get("title");
+  }
+
+  get description() {
+    return this.form.get("description");
+  }
+
   onEditTask() {
-    this.startEdit.emit(!this.showEdit);
     this.showEdit.set(!this.showEdit());
   }
 
@@ -44,10 +69,17 @@ export class TaskComponent {
   }
 
   onUpdateTask() {
-    this.updateTask.emit(true);
+    const newTask = {
+      ...this.task(),
+      title: this.title?.value,
+      description: this.description?.value,
+    };
+    if (!this.showEdit()) {
+      this.updateTask.emit(newTask);
+    }
   }
 
   onDoneTask() {
-    this.updateTask.emit(true);
+    this.completeTask.emit(true);
   }
 }

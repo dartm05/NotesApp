@@ -15,13 +15,13 @@
       class="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8"
     >
       @if (isAddTask) {
-      <app-task-create userId="ssss" (close)="onClose()"></app-task-create>
+      <app-task-create (close)="onClose()"></app-task-create>
       } @for (task of tasks(); track "id") {
       <app-task
         [task]="task"
         (deleteTask)="onDeleteTask(task)"
-        (startEdit)="onEditTask(task)"
-        (updateTask)="onDoneTask(task)"
+        (updateTask)="onEditTask($event)"
+        (completeTask)="onDoneTask(task)"
       ></app-task>
       }
     </div>

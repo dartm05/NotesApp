@@ -1,12 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  effect,
-  inject,
-  Input,
-  OnInit,
-  signal,
-} from "@angular/core";
+import { Component, DestroyRef, inject, OnInit, signal } from "@angular/core";
 import { TaskComponent } from "../../components/task/task.component";
 import { TasksService } from "../../services/tasks.service";
 import { Task } from "../../models/task.model";
