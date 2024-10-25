@@ -13,14 +13,14 @@
             type="submit"
             class="inline-flex items-center mr-4 px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           >
-            @if(showEdit()){<img src="../../../../assets/img/check.png" />}
-            @else{ <img src="../../../../assets/img/pencil.png" />}
+            @if(showEdit()){<img src="assets/img/check.png" />} @else{
+            <img src="assets/img/pencil.png" />}
           </button>
           <button
             (click)="onDeleteTask()"
             class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
           >
-            <img src="../../../../assets/img/trash.png" />
+            <img src="assets/img/trash.png" />
           </button>
         </div>
       </div>
@@ -59,8 +59,8 @@
     <div class="flex items-center justify-between">
       <h3
         class="text-sm font-medium text-gray-900 dark:text-gray-300"
-        [class.status-pending]="status() === 'Pending'"
-        [class.status-completed]="status() === 'Done'"
+        [class.status-pending]="isTaskPending"
+        [class.status-completed]="isTaskDone"
       >
         {{ status() }}
       </h3>
@@ -68,7 +68,7 @@
         <input
           type="checkbox"
           class="form-checkbox h-5 w-5 text-blue-600"
-          [checked]="status() === 'Done'"
+          [checked]="isTaskDone"
           (change)="onDoneTask()"
         />
       </div>

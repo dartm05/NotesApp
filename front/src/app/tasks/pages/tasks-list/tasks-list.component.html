@@ -11,14 +11,14 @@
         Create Task
       </button>
     </div>
-    @if(tasks().length === 0) {
+    @if(!isFetching()){ @if(tasks().length === 0) {
     <div class="items-center">
       <h2 class="mt-24 text-lg text-gray-900 text-center">
         No tasks found. Create a new task.
       </h2>
       <img
         class="mt-12 object-cover w-full h-full"
-        src="../../../../assets/img/add_tasks.svg"
+        src="assets/img/add_tasks.svg"
         alt="No tasks"
       />
     </div>
@@ -38,5 +38,6 @@
       ></app-task>
       }
     </div>
+    }
   </div>
 </div>

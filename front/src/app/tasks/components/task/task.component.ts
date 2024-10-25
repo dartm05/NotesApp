@@ -26,7 +26,7 @@ export class TaskComponent {
 
   startEdit = output<boolean>();
   deleteTask = output<boolean>();
-  updateTask = output<any>();
+  updateTask = output<Task>();
   completeTask = output<boolean>();
 
   form: FormGroup;
@@ -60,6 +60,14 @@ export class TaskComponent {
     return this.form.get("description");
   }
 
+  get isTaskDone() {
+    return this.status() === "Done";
+  }
+
+  get isTaskPending() {
+    return this.status() === "Pending";
+  }
+
   onEditTask() {
     this.showEdit.set(!this.showEdit());
   }
@@ -71,9 +79,9 @@ export class TaskComponent {
   onUpdateTask() {
     const newTask = {
       ...this.task(),
-      title: this.title?.value,
-      description: this.description?.value,
-    };
+      title: this.title!.value,
+      description: this.description!.value,
+    } as Task;
     if (!this.showEdit()) {
       this.updateTask.emit(newTask);
     }

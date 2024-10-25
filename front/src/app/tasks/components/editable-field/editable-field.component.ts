@@ -8,6 +8,7 @@ import {
 } from "@angular/core";
 
 import { CommonModule } from "@angular/common";
+import { ViewMode } from "./view-mode.enum";
 
 @Component({
   selector: "app-editable-field",
@@ -21,16 +22,16 @@ import { CommonModule } from "@angular/common";
       <ng-container *ngTemplateOutlet="viewTemplateRef"></ng-container>
     </ng-template>
   `,
-  styleUrl: "./editable-field.component.css",
 })
 export class EditableFieldComponent {
   isEditMode = input<boolean>();
 
   @ContentChild("viewMode", { static: true })
-  viewTemplateRef!: TemplateRef<any>;
-  @ContentChild("editMode", { static: true }) editTemplate!: TemplateRef<any>;
+  viewTemplateRef!: TemplateRef<HTMLElement>;
+  @ContentChild("editMode", { static: true })
+  editTemplate!: TemplateRef<HTMLElement>;
 
-  mode: "view" | "edit" = "view";
+  mode: ViewMode = ViewMode.View;
 
   _editMode = signal<boolean>(false);
   editMode = this._editMode.asReadonly();
@@ -42,7 +43,7 @@ export class EditableFieldComponent {
 
   constructor() {
     effect(() => {
-      this.mode = this.isEditMode() ? "edit" : "view";
+      this.mode = this.isEditMode() ? ViewMode.Edit : ViewMode.View;
     });
   }
 
