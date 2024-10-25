@@ -1,6 +1,7 @@
 import { Component, input } from "@angular/core";
 import { Router } from "@angular/router";
 import { ErrorService } from "../../services/error/error.service";
+import { ModalService } from "../../services/modal/modal.service";
 
 @Component({
   selector: "app-modal-dialog",
@@ -10,14 +11,22 @@ import { ErrorService } from "../../services/error/error.service";
   styleUrl: "./modal-dialog.component.css",
 })
 export class ModalDialogComponent {
-  constructor(public router: Router, private errorService: ErrorService) {}
+  constructor(
+    public router: Router,
+    private errorService: ErrorService,
+    private modalService: ModalService
+  ) {}
 
   title = input<string>();
   message = input<string>();
-  action = input<string>();
   actionLabel = input<string>();
+  image = input<string>();
 
   onAction() {
-    this.errorService.setError('');
+    if (this.errorService.error()) {
+      this.errorService.setError("");
+    } else {
+      this.modalService.closeModal();
+    }
   }
 }
