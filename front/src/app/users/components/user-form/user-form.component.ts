@@ -1,4 +1,4 @@
-import { Component, Input, output } from "@angular/core";
+import { Component, input, Input, output } from "@angular/core";
 import { Field } from "../../interfaces/field.component.interface";
 import { FormGroup, FormsModule, ReactiveFormsModule } from "@angular/forms";
 
@@ -12,13 +12,13 @@ import { FormGroup, FormsModule, ReactiveFormsModule } from "@angular/forms";
 export class UserFormComponent {
   submitted = output<boolean>();
 
-  @Input({ required: true }) formTitle!: string;
-  @Input({ required: true }) formButtonText!: string;
-  @Input({ required: true }) formLinkText!: string;
-  @Input({ required: true }) formLink!: string;
-  @Input({ required: true }) formOptionText!: string;
-  @Input({ required: true }) inputList!: Field[];
-  @Input({ required: true }) formGroup!: FormGroup;
+  formTitle = input.required<string>();
+  formButtonText = input.required<string>();
+  formLinkText = input.required<string>();
+  formLink = input.required<string>();
+  formOptionText = input.required<string>();
+  inputList = input.required<Field[]>();
+  formGroup = input.required<FormGroup>();
 
   onSubmit() {
     this.submitted.emit(true);
