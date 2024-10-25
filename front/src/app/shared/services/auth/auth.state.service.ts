@@ -39,7 +39,13 @@ export class AuthStateService {
         this.state.set(user);
         this.router.navigate(["tasks"]);
       } else {
-        this.errorService.setError("The user does not exist.");
+        const newError = {
+          statusCode: 404,
+          status: "Error",
+          message: "The user does not exist.",
+          title: "Not Found",
+        };
+        this.errorService.setError(newError);
       }
     });
   }
@@ -62,7 +68,13 @@ export class AuthStateService {
         });
         this.router.navigate(["tasks"]);
       } else {
-        this.errorService.setError("There was an error creating the user.");
+        const newError = {
+          statusCode: 500,
+          status: "Error",
+          message: "There was an error creating the user.",
+          title: "Internal Server Error",
+        };
+        this.errorService.setError(newError);
       }
     });
   }

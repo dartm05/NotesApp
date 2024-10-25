@@ -24,7 +24,7 @@ export class ModalDialogComponent {
 
   onAction() {
     if (this.errorService.error()) {
-      this.errorService.setError("");
+      this.errorService.setError(undefined);
     } else {
       this.modalService.closeModal();
     }

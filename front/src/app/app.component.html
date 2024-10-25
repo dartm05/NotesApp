@@ -1,7 +1,7 @@
-@if(error()){
+@if(error() && error()!.title && error()!.message){
 <app-modal-dialog
-  title="Error"
-  [message]="error()"
+  [title]="error()!.title"
+  [message]="error()!.message"
   image="../assets/img/no_data.svg"
   actionLabel="Close"
 ></app-modal-dialog>
