@@ -1,5 +1,4 @@
-import { Component, input, output } from "@angular/core";
-import { UsersService } from "../../services/users.service";
+import { Component, input } from "@angular/core";
 import { UserFormComponent } from "../../components/user-form/user-form.component";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { AuthStateService } from "../../../shared/services/auth/auth.state.service";
