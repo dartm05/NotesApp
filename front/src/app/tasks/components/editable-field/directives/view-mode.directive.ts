@@ -4,5 +4,5 @@ import { Directive, TemplateRef } from "@angular/core";
   selector: "[viewMode]",
 })
 export class ViewModeDirective {
-  constructor(public templateRef: TemplateRef<any>) {}
+  constructor(public templateRef: TemplateRef<HTMLElement>) {}
 }
