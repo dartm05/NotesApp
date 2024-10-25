@@ -1,6 +1,7 @@
 import { Component, effect } from "@angular/core";
 import { AuthStateService } from "../../services/auth/auth.state.service";
 import { User } from "../../models/auth/user.model";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-header",
@@ -11,15 +12,25 @@ import { User } from "../../models/auth/user.model";
 })
 export class HeaderComponent {
   user: User | undefined;
-  constructor(public authStateService: AuthStateService) {
+
+  constructor(
+    public authStateService: AuthStateService,
+    public router: Router
+  ) {
     effect(() => {
       this.user = this.authStateService.state$();
+      this.isLoggedIn = !!this.authStateService.state$();
     });
   }
 
   headerText: string = "Tasks App";
+  isLoggedIn = false;
 
-  onAction() {
+  onSignIn() {
+    this.router.navigate(["login"]);
+  }
+
+  onSignOut() {
     if (this.authStateService.state$()) {
       this.authStateService.signOut();
     }

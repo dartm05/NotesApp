@@ -1,4 +1,4 @@
-import { effect, Injectable } from "@angular/core";
+import { effect, Injectable, signal } from "@angular/core";
 import {
   ActivatedRouteSnapshot,
   Router,
@@ -6,7 +6,7 @@ import {
 } from "@angular/router";
 import { Observable } from "rxjs";
 import { AuthStateService } from "../services/auth/auth.state.service";
-import { User } from "../models/auth/user.model"; 
+import { User } from "../models/auth/user.model";
 
 @Injectable({
   providedIn: "root",
@@ -17,10 +17,10 @@ export class AuthGuardService {
     private router: Router
   ) {
     effect(() => {
-      this.user = this.authStateService.state$();
+      this.user.set(this.authStateService.state$());
     });
   }
-  user: User | undefined;
+  user = signal<User | undefined>(undefined);
 
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
     if (!this.user) {
