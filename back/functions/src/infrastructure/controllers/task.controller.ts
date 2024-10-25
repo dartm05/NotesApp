@@ -10,7 +10,7 @@ export class TaskController {
   ): Promise<void> {
     const taskService = serviceInjection();
     const createdAt = new Date().toISOString();
-    body = { ...body, createdAt : createdAt };
+    body = { ...body, createdAt: createdAt };
     const success = await taskService.create(userId, body);
     res.json(success);
   }
