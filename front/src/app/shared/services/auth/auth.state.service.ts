@@ -3,7 +3,6 @@ import { User } from "../../models/auth/user.model";
 import { AuthService } from "./auth.service";
 import { Router } from "@angular/router";
 import { ErrorService } from "../error/error.service";
-import { Observable } from "rxjs";
 
 @Injectable({
   providedIn: "root",
@@ -19,8 +18,8 @@ export class AuthStateService {
 
   siginIn(email: string) {
     this.authService.getUser(email).subscribe((user) => {
-      this.state.set(user);
       if (user) {
+        this.state.set(user);
         this.router.navigate(["tasks"]);
       } else {
         this.errorService.setError("The user does not exist.");

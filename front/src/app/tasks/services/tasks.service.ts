@@ -1,20 +1,36 @@
-import { Injectable, signal } from "@angular/core";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { effect, Injectable, signal } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
 import { Task } from "../models/task.model";
 import { catchError, map, Observable, tap } from "rxjs";
 import { ErrorService } from "../../shared/services/error/error.service";
+import { AuthStateService } from "../../shared/services/auth/auth.state.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class TasksService {
-  private userId = "a0H4irXfnq0JJb5kbF9C";
-  private tasksUrl = `http://127.0.0.1:5001/tasks-app-b53c1/us-central1/api/${this.userId}/tasks`;
+  tasksUrl = signal<string>("");
 
   tasks = signal<Task[]>([]);
   loadedTasks = this.tasks.asReadonly();
 
-  constructor(private http: HttpClient, private errorService: ErrorService) {}
+  constructor(
+    private http: HttpClient,
+    private errorService: ErrorService,
+    private authStateService: AuthStateService
+  ) {
+    effect(
+      () => {
+        const currentUser = this.authStateService.state$();
+        if (currentUser) {
+          this.tasksUrl.set(
+            `http://127.0.0.1:5001/tasks-app-b53c1/us-central1/api/${currentUser.id}/tasks`
+          );
+        }
+      },
+      { allowSignalWrites: true }
+    );
+  }
 
   loadTasks(): Observable<Task[]> {
     return this.getTasks().pipe(
@@ -41,12 +57,12 @@ export class TasksService {
 
   getTasks(): Observable<Task[]> {
     return this.http
-      .get<Task[]>(this.tasksUrl)
+      .get<Task[]>(this.tasksUrl())
       .pipe(map((data: any) => data as Task[]));
   }
 
   createTask(task: Task): Observable<Task> {
-    return this.http.post<Task>(this.tasksUrl, task).pipe(
+    return this.http.post<Task>(this.tasksUrl(), task).pipe(
       catchError((error: any) => {
         this.errorService.setError(error);
         throw error;
