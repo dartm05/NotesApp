@@ -1,5 +1,17 @@
 @if(error()){
-<app-modal-dialog title="Error" [message]="error()"></app-modal-dialog>
+<app-modal-dialog
+  title="Error"
+  [message]="error()"
+  image="../assets/img/no_data.svg"
+  actionLabel="Close"
+></app-modal-dialog>
+} @if(modal()){
+<app-modal-dialog
+  [title]="modal()?.title"
+  [message]="modal()?.message"
+  [actionLabel]="modal()?.actionLabel"
+  [image]="modal()?.image"
+></app-modal-dialog>
 }
 <html class="h-full bg-white">
   <body class="h-full">
