@@ -46,8 +46,6 @@ export class TasksListComponent implements OnInit {
     });
   }
 
-  fetchTasks() {}
-
   onAddTask() {
     this.isAddTask = true;
   }
