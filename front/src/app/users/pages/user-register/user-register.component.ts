@@ -1,7 +1,7 @@
 import { Component, input } from "@angular/core";
 import { UserFormComponent } from "../../components/user-form/user-form.component";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
-import { AuthStateService } from "../../../shared/services/auth/auth.state.service";
+import { AuthStateService } from "../../../core/auth/auth.state.service";
 
 @Component({
   selector: "app-user-register",

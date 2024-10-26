@@ -1,11 +1,11 @@
-import { effect, Injectable, signal } from "@angular/core";
+import { DestroyRef, effect, inject, Injectable, signal } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Task } from "../models/task.model";
 import { catchError, map, Observable, tap } from "rxjs";
 import { Error } from "../../shared/models/error.model";
-import { ErrorService } from "../../shared/services/error/error.service";
-import { AuthStateService } from "../../shared/services/auth/auth.state.service";
+import { AuthStateService } from "../../core/auth/auth.state.service";
 import { environment } from "../../../environments/environment";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Injectable({
   providedIn: "root",
@@ -14,12 +14,12 @@ export class TasksService {
   tasksUrl = signal<string>("");
   tasks = signal<Task[]>([]);
   loadedTasks = this.tasks.asReadonly();
+  destroyRef = inject(DestroyRef);
 
   private domain: string = "";
 
   constructor(
     private http: HttpClient,
-    private errorService: ErrorService,
     private authStateService: AuthStateService
   ) {
     this.domain = environment.domain;
@@ -45,16 +45,18 @@ export class TasksService {
   }
 
   editTask(task: Task) {
-    this.updateTask(task).subscribe({
-      next: (task) => {
-        const prevTasks = this.tasks();
-        const index = prevTasks.findIndex(
-          (prevTask) => prevTask.id === task.id
-        );
-        prevTasks[index] = task;
-        this.tasks.set(prevTasks);
-      },
-    });
+    this.updateTask(task)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (task) => {
+          const prevTasks = this.tasks();
+          const index = prevTasks.findIndex(
+            (prevTask) => prevTask.id === task.id
+          );
+          prevTasks[index] = task;
+          this.tasks.set(prevTasks);
+        },
+      });
   }
 
   getTasks(): Observable<Task[]> {
@@ -64,19 +66,11 @@ export class TasksService {
   }
 
   createTask(task: Task): Observable<Task> {
-    return this.http.post<Task>(this.tasksUrl(), task).pipe(
-      catchError((error: Error) => {
-        throw error;
-      })
-    );
+    return this.http.post<Task>(this.tasksUrl(), task);
   }
 
   updateTask(task: Task): Observable<Task> {
-    return this.http.put<Task>(`${this.tasksUrl()}/${task.id}`, task).pipe(
-      catchError((error: Error) => {
-        throw error;
-      })
-    );
+    return this.http.put<Task>(`${this.tasksUrl()}/${task.id}`, task);
   }
 
   deleteTask(task: Task): Observable<Task> {

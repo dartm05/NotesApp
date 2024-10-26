@@ -1,5 +1,5 @@
 import { Component, effect } from "@angular/core";
-import { AuthStateService } from "../../services/auth/auth.state.service";
+import { AuthStateService } from "../../../core/auth/auth.state.service";
 import { User } from "../../models/auth/user.model";
 import { Router } from "@angular/router";
 
