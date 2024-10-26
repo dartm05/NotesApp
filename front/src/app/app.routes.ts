@@ -1,5 +1,5 @@
 import { mapToCanActivate, Routes } from "@angular/router";
-import { AuthGuardService } from "./shared/guards/auth.guard";
+import { AuthGuardService } from "./core/guards/auth.guard";
 
 export const routes: Routes = [
   {

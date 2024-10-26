@@ -1,4 +1,4 @@
-@if(error() && error()!.title && error()!.message){
+@if(error()){
 <app-modal-dialog
   [title]="error()!.title"
   [message]="error()!.message"

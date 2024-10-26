@@ -66,7 +66,6 @@ export class TasksService {
   createTask(task: Task): Observable<Task> {
     return this.http.post<Task>(this.tasksUrl(), task).pipe(
       catchError((error: Error) => {
-        this.errorService.setError(error);
         throw error;
       })
     );
@@ -75,7 +74,6 @@ export class TasksService {
   updateTask(task: Task): Observable<Task> {
     return this.http.put<Task>(`${this.tasksUrl()}/${task.id}`, task).pipe(
       catchError((error: Error) => {
-        this.errorService.setError(error);
         throw error;
       })
     );
@@ -89,7 +87,6 @@ export class TasksService {
     return this.http.delete<Task>(`${this.tasksUrl()}/${task.id}`).pipe(
       catchError((error: Error) => {
         this.tasks.set(prevtasks);
-        this.errorService.setError(error);
         throw error;
       })
     );
