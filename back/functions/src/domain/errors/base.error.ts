@@ -2,17 +2,17 @@ export class Error {
   statusCode: number;
   status: string;
   message: string;
-  tittle: string;
+  title: string;
 
   constructor(
     statusCode: number,
-    tittle: string,
+    title: string,
     message: string,
     status: string,
   ) {
     this.statusCode = statusCode;
     this.status = status;
     this.message = message;
-    this.tittle = tittle;
+    this.title = title;
   }
 }
