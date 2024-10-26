@@ -16,11 +16,11 @@ export class TaskService implements ITaskUseCase {
     return this.taskDrivenAdapter.findOne(userId, id);
   }
 
-  update(userId: string, id: string, task: ITask): Promise<void> {
+  update(userId: string, id: string, task: ITask): Promise<ITask | undefined> {
     return this.taskDrivenAdapter.update(userId, id, task);
   }
 
-  remove(userId: string, id: string): Promise<void> {
+  remove(userId: string, id: string): Promise<ITask | undefined> {
     return this.taskDrivenAdapter.remove(userId, id);
   }
 }

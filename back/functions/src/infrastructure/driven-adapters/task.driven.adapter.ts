@@ -36,22 +36,39 @@ export class TaskDrivenAdapter implements ITaskUseCase {
     return { ...querySnapshot.data(), id } as ITask;
   }
 
-  async update(userId: string, id: string, task: ITask): Promise<void> {
-    await db
+  async update(
+    userId: string,
+    id: string,
+    task: ITask
+  ): Promise<ITask | undefined> {
+    const updated = await db
       .collection("users")
       .doc(userId)
       .collection("tasks")
       .doc(id)
-      .update({ ...task });
+      .update({ ...task })
+      .then(() => {
+        return task;
+      });
+    return updated as ITask;
   }
 
-  async remove(userId: string, id: string): Promise<void> {
+  async remove(userId: string, id: string): Promise<ITask | undefined> {
+    const querySnapshot = await db
+      .collection("users")
+      .doc(userId)
+      .collection("tasks")
+      .doc(id)
+      .get();
+
     await db
       .collection("users")
       .doc(userId)
       .collection("tasks")
       .doc(id)
       .delete();
+
+    return { ...querySnapshot.data(), id } as ITask;
   }
 
   async removeAll(userId: string): Promise<void> {

@@ -6,9 +6,9 @@ export class Error {
 
   constructor(
     statusCode: number,
-    status: string,
+    tittle: string,
     message: string,
-    tittle: string
+    status: string,
   ) {
     this.statusCode = statusCode;
     this.status = status;
