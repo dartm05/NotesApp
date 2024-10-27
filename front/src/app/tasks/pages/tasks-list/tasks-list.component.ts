@@ -1,4 +1,11 @@
-import { Component, DestroyRef, inject, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  output,
+  signal,
+} from "@angular/core";
 import { TaskComponent } from "../../components/task/task.component";
 import { TasksService } from "../../services/tasks.service";
 import { Task } from "../../models/task.model";
@@ -26,8 +33,7 @@ export class TasksListComponent implements OnInit {
       .loadTasks()
       .pipe(takeUntilDestroyed(this.destroRef))
       .subscribe({
-        error: (error) => {
-          this.error.set(error.message);
+        error: () => {
           this.isFetching.set(false);
         },
         complete: () => {
@@ -63,8 +69,7 @@ export class TasksListComponent implements OnInit {
       .subscribe({
         next: () => {
           this.tasksService.loadTasks().subscribe({
-            error: (error) => {
-              this.error.set(error.message);
+            error: () => {
               this.isFetching.set(false);
             },
             complete: () => {

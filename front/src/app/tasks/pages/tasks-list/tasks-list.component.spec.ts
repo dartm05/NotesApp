@@ -4,7 +4,7 @@ import { TasksListComponent } from "./tasks-list.component";
 import { TasksService } from "../../services/tasks.service";
 import { of } from "rxjs";
 import { Task } from "../../models/task.model";
-import { importProvidersFrom } from "@angular/core";
+import { importProvidersFrom, signal } from "@angular/core";
 import { HttpClientModule } from "@angular/common/http";
 
 describe("TasksListComponent", () => {
@@ -20,12 +20,35 @@ describe("TasksListComponent", () => {
     createdAt: new Date(),
   };
 
+  let secondTask: Task = {
+    id: "2",
+    title: "Test Task",
+    description: "Test task update",
+    done: false,
+    createdAt: new Date(),
+  };
+
+  let newTask: Task = {
+    id: "3",
+    title: "Test Task",
+    description: "Test task create",
+    done: false,
+    createdAt: new Date(),
+  };
+
+  let tasks: Task[] = [task, secondTask];
+
   beforeEach(async () => {
     tasksService = {
-      loadTasks: jest.fn().mockReturnValue(of([])),
-      createTask: jest.fn(),
-      updateTask: jest.fn(),
-      deleteTask: jest.fn(),
+      loadTasks: jest.fn().mockReturnValue(of(tasks)),
+      createTask: jest.fn().mockReturnValue(of([...tasks, newTask])),
+      updateTask: jest
+        .fn()
+        .mockReturnValue(of([...tasks, { ...task, done: !task.done }])),
+      deleteTask: jest
+        .fn()
+        .mockReturnValue(of(tasks.filter((t) => t.id == task.id))),
+      loadedTasks: signal(tasks),
     };
 
     errorService = {
@@ -42,11 +65,12 @@ describe("TasksListComponent", () => {
 
     fixture = TestBed.createComponent(TasksListComponent);
     component = fixture.componentInstance;
+    component.ngOnInit();
     fixture.detectChanges();
   });
 
   it("should fetch tasks on init", () => {
-    tasksService.loadTasks.and.returnValue(of([]));
+    tasksService.loadTasks;
     component.ngOnInit();
     expect(tasksService.loadTasks).toHaveBeenCalled();
   });
@@ -57,33 +81,34 @@ describe("TasksListComponent", () => {
   });
 
   it("should close task creation", () => {
-    tasksService.loadTasks.and.returnValue(of([]));
     component.onClose();
     expect(tasksService.loadTasks).toHaveBeenCalled();
     expect(component.isAddTask).toBe(false);
   });
 
   it("should toggle task done status", () => {
-    spyOn(component, "updateTask");
+    jest.spyOn(component, "updateTask");
     component.onDoneTask(task);
-    expect(component.updateTask).toHaveBeenCalledWith({ ...task, done: true });
+    expect(component.updateTask).toHaveBeenCalledWith({
+      ...task,
+      done: !task.done,
+    });
   });
 
   it("should delete a task", () => {
-    tasksService.deleteTask.and.returnValue(of({}));
-    component.onDeleteTask(task);
-    expect(tasksService.deleteTask).toHaveBeenCalledWith(task);
+    tasksService.deleteTask;
+    component.onDeleteTask(secondTask);
+    expect(tasksService.deleteTask).toHaveBeenCalledWith(secondTask);
   });
 
   it("should edit a task", () => {
-    spyOn(component, "updateTask");
+    jest.spyOn(component, "updateTask");
     component.onEditTask(task);
     expect(component.updateTask).toHaveBeenCalledWith(task);
   });
 
   it("should update a task", () => {
-    tasksService.updateTask.and.returnValue(of({}));
-    tasksService.loadTasks.and.returnValue(of([]));
+    tasksService.updateTask;
     component.updateTask(task);
     expect(tasksService.updateTask).toHaveBeenCalledWith(task);
     expect(tasksService.loadTasks).toHaveBeenCalled();

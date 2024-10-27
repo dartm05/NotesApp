@@ -40,7 +40,7 @@ export class TaskComponent {
     this.form = this.fb.group({
       title: [""],
       description: [""],
-    });
+    }); 
 
     effect(
       () => {
