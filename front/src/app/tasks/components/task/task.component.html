@@ -1,6 +1,7 @@
 <app-card>
   <div
-    class="h-full p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 relative"
+    class="h-full p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
+    [class.relative]="!isAddTask()"
   >
     <form [formGroup]="form" (ngSubmit)="onUpdateTask()">
       <div class="flex justify-between">

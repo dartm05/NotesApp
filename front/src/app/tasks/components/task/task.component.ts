@@ -23,6 +23,7 @@ enum TaskStatus {
 })
 export class TaskComponent {
   task = input<Task>();
+  isAddTask = input<boolean>();
 
   showEdit = signal<boolean>(false);
   buttonText = signal<string>("");
