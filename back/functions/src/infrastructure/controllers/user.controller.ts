@@ -28,7 +28,7 @@ export class UserController {
     res.json(user);
   }
 }
-function serviceInjection(): IUserUseCase {
+export function serviceInjection(): IUserUseCase {
   const userDrivenAdapter = new UserDrivenAdapter();
   const userService = new UserService(userDrivenAdapter);
   return userService;
