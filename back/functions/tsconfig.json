@@ -12,5 +12,5 @@
   "compileOnSave": true,
   "include": [
     "src"
-  ]
+, "test/infrastructure/controllers/user.controller.test.ts"  ]
 }
