@@ -1,6 +1,13 @@
-import { Component, EventEmitter, inject, Input, Output } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  EventEmitter,
+  inject,
+  Output,
+} from "@angular/core";
 import { TasksService } from "../../services/tasks.service";
 import { FormsModule } from "@angular/forms";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: "app-task-create",
@@ -11,11 +18,11 @@ import { FormsModule } from "@angular/forms";
 })
 export class TaskCreateComponent {
   constructor(private tasksService: TasksService) {}
+  destroyRef = inject(DestroyRef);
 
   @Output() close = new EventEmitter<void>();
   enteredTitle = "";
   description = "";
-  enteredDate = "";
 
   onCancel() {
     this.close.emit();
@@ -29,9 +36,17 @@ export class TaskCreateComponent {
       createdAt: new Date(),
       done: false,
     };
-    this.tasksService.createTask(newTask).subscribe((createdTask) => {
-      this.tasksService.tasks.set([...this.tasksService.tasks(), createdTask]);
-      this.close.emit();
-    });
+    this.tasksService
+      .createTask(newTask)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (createdTask) => {
+          this.tasksService.tasks.set([
+            ...this.tasksService.tasks(),
+            createdTask,
+          ]);
+          this.close.emit();
+        },
+      });
   }
 }

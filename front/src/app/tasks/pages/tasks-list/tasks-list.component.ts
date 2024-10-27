@@ -3,7 +3,8 @@ import { TaskComponent } from "../../components/task/task.component";
 import { TasksService } from "../../services/tasks.service";
 import { Task } from "../../models/task.model";
 import { TaskCreateComponent } from "../../components/task-create/task-create.component";
-import { ErrorService } from "../../../shared/services/error/error.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+
 @Component({
   selector: "app-tasks-list",
   standalone: true,
@@ -12,30 +13,27 @@ import { ErrorService } from "../../../shared/services/error/error.service";
   styleUrl: "./tasks-list.component.css",
 })
 export class TasksListComponent implements OnInit {
-  constructor(
-    private tasksService: TasksService,
-    private errorService: ErrorService
-  ) {}
+  constructor(private tasksService: TasksService) {}
   private destroRef = inject(DestroyRef);
-  error = signal<string | null>(null);
   tasks = this.tasksService.loadedTasks;
+  error = signal<string | null>(null);
   isFetching = signal<boolean>(false);
   isAddTask = false;
 
   ngOnInit() {
     this.isFetching.set(true);
-    const subscription = this.tasksService.loadTasks().subscribe({
-      error: (error) => {
-        this.error.set(error.message);
-        this.isFetching.set(false);
-      },
-      complete: () => {
-        this.isFetching.set(false);
-      },
-    });
-    this.destroRef.onDestroy(() => {
-      subscription.unsubscribe();
-    });
+    this.tasksService
+      .loadTasks()
+      .pipe(takeUntilDestroyed(this.destroRef))
+      .subscribe({
+        error: (error) => {
+          this.error.set(error.message);
+          this.isFetching.set(false);
+        },
+        complete: () => {
+          this.isFetching.set(false);
+        },
+      });
   }
 
   onAddTask() {
@@ -51,11 +49,7 @@ export class TasksListComponent implements OnInit {
   }
 
   onDeleteTask(task: Task) {
-    this.tasksService.deleteTask(task).subscribe({
-      error: (error) => {
-        this.errorService.setError(error.message);
-      },
-    });
+    this.tasksService.deleteTask(task).subscribe({});
   }
 
   onEditTask(task: Task) {
@@ -63,21 +57,21 @@ export class TasksListComponent implements OnInit {
   }
 
   updateTask(task: Task) {
-    this.tasksService.updateTask(task).subscribe({
-      error: (error) => {
-        this.errorService.setError(error.message);
-      },
-      next: () => {
-        this.tasksService.loadTasks().subscribe({
-          error: (error) => {
-            this.error.set(error.message);
-            this.isFetching.set(false);
-          },
-          complete: () => {
-            this.isFetching.set(false);
-          },
-        });
-      },
-    });
+    this.tasksService
+      .updateTask(task)
+      .pipe(takeUntilDestroyed(this.destroRef))
+      .subscribe({
+        next: () => {
+          this.tasksService.loadTasks().subscribe({
+            error: (error) => {
+              this.error.set(error.message);
+              this.isFetching.set(false);
+            },
+            complete: () => {
+              this.isFetching.set(false);
+            },
+          });
+        },
+      });
   }
 }

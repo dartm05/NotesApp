@@ -5,6 +5,10 @@ import { DatePipe } from "@angular/common";
 import { FormBuilder, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { EditableFieldComponent } from "../editable-field/editable-field.component";
 
+enum TaskStatus {
+  Done = "Done",
+  Pending = "Pending",
+}
 @Component({
   selector: "app-task",
   standalone: true,
@@ -41,7 +45,9 @@ export class TaskComponent {
       () => {
         const currentTask = this.task();
         if (currentTask) {
-          this.status.set(currentTask.done ? "Done" : "Pending");
+          this.status.set(
+            currentTask.done ? TaskStatus.Done : TaskStatus.Pending
+          );
           this.form.patchValue({
             title: currentTask.title,
             description: currentTask.description,
@@ -61,11 +67,11 @@ export class TaskComponent {
   }
 
   get isTaskDone() {
-    return this.status() === "Done";
+    return this.status() === TaskStatus.Done;
   }
 
   get isTaskPending() {
-    return this.status() === "Pending";
+    return this.status() === TaskStatus.Pending;
   }
 
   onEditTask() {

@@ -21,7 +21,6 @@ import { HttpClientModule } from "@angular/common/http";
   styleUrl: "./app.component.css",
 })
 export class AppComponent {
-  title = "tasks-app";
   private errorService = inject(ErrorService);
   private modalService = inject(ModalService);
   error = this.errorService.error;

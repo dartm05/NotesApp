@@ -33,7 +33,7 @@ export class AuthStateService {
     }
   });
 
-  siginIn(email: string) {
+  signIn(email: string) {
     this.authService
       .getUser(email)
       .pipe(takeUntilDestroyed(this.destroyRef))

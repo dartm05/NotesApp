@@ -36,6 +36,7 @@ export class UserLoginComponent {
   ];
 
   onSubmit() {
-    this.authStateService.siginIn(this.formGroup.value.email);
+    const email = this.formGroup.get('email')?.value;
+    this.authStateService.signIn(email);
   }
 }
