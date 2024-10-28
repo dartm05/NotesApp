@@ -11,7 +11,8 @@ export class TaskController {
   static async create(
     { params: { userId }, body }: Request<{ userId: string }>,
     res: Response,
-    next: any
+    next: any,
+    serviceInjection: () => ITaskUseCase
   ): Promise<void> {
     const taskService = serviceInjection();
     const createdAt = new Date().toISOString();
@@ -24,20 +25,21 @@ export class TaskController {
   static async findAll(
     { params: { userId } }: Request<{ userId: string }>,
     res: Response,
-    next: any
+    next: any,
+    serviceInjection: () => ITaskUseCase
   ): Promise<void> {
     const taskService = serviceInjection();
     const tasks = (await taskService.findAll(userId)).sort((a, b) => {
       return a.createdAt > b.createdAt ? 1 : -1;
     });
-    if (!tasks) return next(new TasksNotFoundError());
     res.json(tasks);
   }
 
   static async findOne(
     { params: { userId, id } }: Request<{ userId: string; id: string }>,
     res: Response,
-    next: any
+    next: any,
+    serviceInjection: () => ITaskUseCase
   ): Promise<void> {
     const taskService = serviceInjection();
     const task = await taskService.findOne(userId, id);
@@ -48,7 +50,8 @@ export class TaskController {
   static async update(
     { params: { userId, id }, body }: Request<{ userId: string; id: string }>,
     res: Response,
-    next: any
+    next: any,
+    serviceInjection: () => ITaskUseCase
   ): Promise<void> {
     const taskService = serviceInjection();
     const success = await taskService.update(userId, id, body);
@@ -59,7 +62,8 @@ export class TaskController {
   static async remove(
     { params: { userId, id } }: Request<{ userId: string; id: string }>,
     res: Response,
-    next: any
+    next: any,
+    serviceInjection: () => ITaskUseCase
   ): Promise<void> {
     const taskService = serviceInjection();
     const success = await taskService.remove(userId, id);
@@ -68,7 +72,7 @@ export class TaskController {
   }
 }
 
-function serviceInjection(): ITaskUseCase {
+export function serviceInjection(): ITaskUseCase {
   const taskDrivenAdapter = new TaskDrivenAdapter();
   const taskService = new TaskService(taskDrivenAdapter);
   return taskService;

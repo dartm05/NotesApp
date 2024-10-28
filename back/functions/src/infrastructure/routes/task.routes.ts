@@ -1,14 +1,25 @@
-import express from 'express';
-import { TaskController } from '../controllers/task.controller';
-
+import express from "express";
+import {
+  TaskController,
+  serviceInjection,
+} from "../controllers/task.controller";
 
 const taskApp = express();
 
-taskApp.get('/:userId/tasks', TaskController.findAll);
-taskApp.get('/:userId/tasks/:id', TaskController.findOne);
-taskApp.post('/:userId/tasks', TaskController.create);
-taskApp.put('/:userId/tasks/:id', TaskController.update);
-taskApp.delete('/:userId/tasks/:id', TaskController.remove);
-
+taskApp.get("/:userId/tasks", (req, res, next) =>
+  TaskController.findAll(req, res, next, serviceInjection)
+);
+taskApp.get("/:userId/tasks/:id", (req, res, next) =>
+  TaskController.findOne(req, res, next, serviceInjection)
+);
+taskApp.post("/:userId/tasks", (req, res, next) =>
+  TaskController.create(req, res, next, serviceInjection)
+);
+taskApp.put("/:userId/tasks/:id", (req, res, next) =>
+  TaskController.update(req, res, next, serviceInjection)
+);
+taskApp.delete("/:userId/tasks/:id", (req, res, next) =>
+  TaskController.remove(req, res, next, serviceInjection)
+);
 
 export default taskApp;
