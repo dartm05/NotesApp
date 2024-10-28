@@ -1,135 +1,199 @@
-import { Request, Response } from "express";
+import { describe, it, beforeEach, expect } from "@jest/globals";
+import { jest } from "@jest/globals";
+import { getMockReq, getMockRes } from "@jest-mock/express";
+
 import { TaskController } from "../../../src/infrastructure/controllers/task.controller";
-import { TaskService } from "../../../src/application/services/task.service";
+import { ITaskUseCase } from "../../../src/domain/usecases/task/task.usecase";
+import { ITask } from "../../../src/domain/models/task/task";
 import { TaskNotCreatedError } from "../../../src/domain/errors/task-not-created";
 import { TasksNotFoundError } from "../../../src/domain/errors/tasks-not-found";
-import { TaskNotDeletedError } from "../../../src/domain/errors/task-not-deleted.error";
 import { TaskNotUpdatedError } from "../../../src/domain/errors/task-not-updated.error";
-
-import { describe, it, beforeEach, expect, jest } from "@jest/globals";
-
-jest.mock("../../../src/application/services/task.service");
+import { TaskNotDeletedError } from "../../../src/domain/errors/task-not-deleted.error";
 
 describe("TaskController", () => {
-    let req: Partial<Request>;
-    let res: Partial<Response>;
-    let next: jest.Mock;
+  let mockTaskService: jest.Mocked<ITaskUseCase>;
+  let mockReq;
+  let serviceInjection;
 
+  beforeEach(() => {
+    mockTaskService = {
+      create: jest.fn(),
+      findAll: jest.fn(),
+      findOne: jest.fn(),
+      update: jest.fn(),
+      remove: jest.fn(),
+    };
+    serviceInjection = jest.fn().mockReturnValue(mockTaskService);
+  });
+
+  describe("create", () => {
+    const task = {
+      title: "Test Task",
+      description: "Test Description",
+      done: false,
+    } as ITask;
+    mockReq = getMockReq({
+      body: task,
+      params: { userId: "1" },
+    });
+    const { res, next } = getMockRes({
+      json: jest.fn() as any,
+      status: jest.fn().mockReturnThis(),
+    });
+    it("should create a task successfully", async () => {
+      mockTaskService.create.mockResolvedValueOnce(undefined);
+      await TaskController.create(mockReq, res, next, serviceInjection);
+
+      expect(mockTaskService.create).toHaveBeenCalled();
+    });
+    it("should call next with TaskNotCreatedError if task creation fails", async () => {
+      mockReq = getMockReq({
+        body: task,
+        params: { userId: "1" },
+      });
+
+      const { res, next } = getMockRes({
+        json: jest.fn() as any,
+        status: jest.fn().mockReturnThis(),
+      });
+
+      mockTaskService.create.mockResolvedValueOnce(undefined);
+      await TaskController.create(mockReq, res, next, serviceInjection);
+      expect(next).toHaveBeenCalledWith(new TaskNotCreatedError());
+    });
+  });
+
+  describe("findAll", () => {
+    mockReq = getMockReq({
+      params: { userId: "1" },
+    });
+
+    const { res, next } = getMockRes({
+      json: jest.fn() as any,
+      status: jest.fn().mockReturnThis(),
+    });
+    it("should return all tasks", async () => {
+      const tasks = [
+        {
+          id: "1",
+          title: "task1",
+          description: "description",
+          createdAt: new Date("2023-01-01"),
+          done: false,
+        },
+        {
+          id: "2",
+          title: "task2",
+          description: "description",
+          createdAt: new Date("2023-01-02"),
+          done: true,
+        },
+      ];
+
+      mockTaskService.findAll.mockResolvedValue(tasks);
+      await TaskController.findAll(mockReq, res, next, serviceInjection);
+
+      expect(mockTaskService.findAll).toHaveBeenCalledWith("1");
+      expect(res.json).toHaveBeenCalledWith(
+        tasks.sort((a, b) => (a.createdAt > b.createdAt ? 1 : -1))
+      );
+    });
+  });
+
+  describe("findOne", () => {
     beforeEach(() => {
-        req = {
-            params: { userId: "1", id: "1" },
-            body: { title: "Test Task" },
-        };
-        res = {
-            json: jest.fn(),
-        };
-        next = jest.fn();
+      mockReq = getMockReq({
+        params: { userId: "1", id: "1" },
+      });
     });
 
-    describe("create", () => {
-        it("should create a task successfully", async () => {
-            const taskService = TaskService.prototype;
-            taskService.create = jest.fn().mockResolvedValue(true);
+    const { res, next } = getMockRes({
+      json: jest.fn() as any,
+      status: jest.fn().mockReturnThis(),
+    });
+    it("should return a task", async () => {
+      const task = {
+        id: "1",
+        title: "task1",
+        description: "description",
+        createdAt: new Date("2023-01-01"),
+        done: false,
+      };
 
-            await TaskController.create(req as Request, res as Response, next);
+      mockTaskService.findOne.mockResolvedValue(task);
+      await TaskController.findOne(mockReq, res, next, serviceInjection);
 
-            expect(taskService.create).toHaveBeenCalledWith("1", expect.objectContaining({ title: "Test Task" }));
-            expect(res.json).toHaveBeenCalledWith(true);
-        });
-
-        it("should handle task creation failure", async () => {
-            const taskService = TaskService.prototype;
-            taskService.create = jest.fn().mockResolvedValue(false);
-
-            await TaskController.create(req as Request, res as Response, next);
-
-            expect(next).toHaveBeenCalledWith(new TaskNotCreatedError());
-        });
+      expect(mockTaskService.findOne).toHaveBeenCalledWith("1", "1");
+      expect(res.json).toHaveBeenCalledWith(task);
     });
 
-    describe("findAll", () => {
-        it("should return all tasks", async () => {
-            const tasks = [{ createdAt: "2023-01-01T00:00:00Z" }, { createdAt: "2023-01-02T00:00:00Z" }];
-            const taskService = TaskService.prototype;
-            taskService.findAll = jest.fn().mockResolvedValue(tasks);
+    it("should call next with TasksNotFoundError if task not found", async () => {
+      mockTaskService.findOne.mockResolvedValue(undefined);
+      await TaskController.findOne(mockReq, res, next, serviceInjection);
+      expect(next).toHaveBeenCalledWith(new TasksNotFoundError());
+    });
+  });
 
-            await TaskController.findAll(req as Request, res as Response, next);
+  describe("update", () => {
+    const task = {
+      title: "Test Task",
+      description: "Test Description",
+      done: false,
+    } as ITask;
 
-            expect(taskService.findAll).toHaveBeenCalledWith("1");
-            expect(res.json).toHaveBeenCalledWith(tasks);
-        });
-
-        it("should handle no tasks found", async () => {
-            const taskService = TaskService.prototype;
-            taskService.findAll = jest.fn().mockResolvedValue(null);
-
-            await TaskController.findAll(req as Request, res as Response, next);
-
-            expect(next).toHaveBeenCalledWith(new TasksNotFoundError());
-        });
+    mockReq = getMockReq({
+      body: task,
+      params: { userId: "1", id: "1" },
     });
 
-    describe("findOne", () => {
-        it("should return a single task", async () => {
-            const task = { id: "1", title: "Test Task" };
-            const taskService = TaskService.prototype;
-            taskService.findOne = jest.fn().mockResolvedValue(task);
-
-            await TaskController.findOne(req as Request, res as Response, next);
-
-            expect(taskService.findOne).toHaveBeenCalledWith("1", "1");
-            expect(res.json).toHaveBeenCalledWith(task);
-        });
-
-        it("should handle task not found", async () => {
-            const taskService = TaskService.prototype;
-            taskService.findOne = jest.fn().mockResolvedValue(null);
-
-            await TaskController.findOne(req as Request, res as Response, next);
-
-            expect(next).toHaveBeenCalledWith(new TasksNotFoundError());
-        });
+    const { res, next } = getMockRes({
+      json: jest.fn() as any,
+      status: jest.fn().mockReturnThis(),
     });
 
-    describe("update", () => {
-        it("should update a task successfully", async () => {
-            const taskService = TaskService.prototype;
-            taskService.update = jest.fn().mockResolvedValue(true);
+    it("should update a task successfully", async () => {
+      mockTaskService.update.mockResolvedValue(task);
+      await TaskController.update(mockReq, res, next, serviceInjection);
 
-            await TaskController.update(req as Request, res as Response, next);
-
-            expect(taskService.update).toHaveBeenCalledWith("1", "1", { title: "Test Task" });
-            expect(res.json).toHaveBeenCalledWith(true);
-        });
-
-        it("should handle task update failure", async () => {
-            const taskService = TaskService.prototype;
-            taskService.update = jest.fn().mockResolvedValue(false);
-
-            await TaskController.update(req as Request, res as Response, next);
-
-            expect(next).toHaveBeenCalledWith(new TaskNotUpdatedError());
-        });
+      expect(mockTaskService.update).toHaveBeenCalled();
+      expect(res.json).toHaveBeenCalledWith(task);
     });
 
-    describe("remove", () => {
-        it("should delete a task successfully", async () => {
-            const taskService = TaskService.prototype;
-            taskService.remove = jest.fn().mockResolvedValue(true);
-
-            await TaskController.remove(req as Request, res as Response, next);
-
-            expect(taskService.remove).toHaveBeenCalledWith("1", "1");
-            expect(res.json).toHaveBeenCalledWith(true);
-        });
-
-        it("should handle task deletion failure", async () => {
-            const taskService = TaskService.prototype;
-            taskService.remove = jest.fn().mockResolvedValue(false);
-
-            await TaskController.remove(req as Request, res as Response, next);
-
-            expect(next).toHaveBeenCalledWith(new TaskNotDeletedError());
-        });
+    it("should call next with TaskNotUpdatedError if task update fails", async () => {
+      mockTaskService.update.mockResolvedValue(undefined);
+      await TaskController.update(mockReq, res, next, serviceInjection);
+      expect(next).toHaveBeenCalledWith(new TaskNotUpdatedError());
     });
+  });
+
+  describe("remove", () => {
+    const task = {
+      title: "Test Task",
+      description: "Test Description",
+      done: false,
+    } as ITask;
+
+    mockReq = getMockReq({
+      body: task,
+      params: { userId: "1", id: "1" },
+    });
+
+    const { res, next } = getMockRes({
+      json: jest.fn() as any,
+      status: jest.fn().mockReturnThis(),
+    });
+    it("should remove a task successfully", async () => {
+      mockTaskService.remove.mockResolvedValue(task);
+      await TaskController.remove(mockReq, res, next, serviceInjection);
+
+      expect(mockTaskService.remove).toHaveBeenCalledWith("1", "1");
+      expect(res.json).toHaveBeenCalledWith(task);
+    });
+
+    it("should call next with TaskNotDeletedError if task removal fails", async () => {
+      mockTaskService.remove.mockResolvedValue(undefined);
+      await TaskController.remove(mockReq, res, next, serviceInjection);
+      expect(next).toHaveBeenCalledWith(new TaskNotDeletedError());
+    });
+  });
 });

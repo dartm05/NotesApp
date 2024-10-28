@@ -12,8 +12,6 @@ describe("ITask", () => {
             description: "This is a test task",
             done: false,
             createdAt: new Date(),
-            updatedAt: new Date(),
-            deletedAt: new Date(),
         };
     });
 
@@ -35,13 +33,5 @@ describe("ITask", () => {
 
     it("should have a createdAt property of type Date", () => {
         expect(task.createdAt).toBeInstanceOf(Date);
-    });
-
-    it("should have an updatedAt property of type Date", () => {
-        expect(task.updatedAt).toBeInstanceOf(Date);
-    });
-
-    it("should have a deletedAt property of type Date", () => {
-        expect(task.deletedAt).toBeInstanceOf(Date);
     });
 });
