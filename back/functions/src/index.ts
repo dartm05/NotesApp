@@ -1,8 +1,10 @@
 import { initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
+import dotenv from "dotenv";
+dotenv.config();
 
 export const firebaseConfig = {
-  apiKey: "AIzaSyBVKECxc5lOkJLBl_Siv7MjBY7TiwFMeu0",
+  apiKey: process.env.FIREBASE_API_KEY,
   authDomain: "tasks-app-b53c1.firebaseapp.com",
   projectId: "tasks-app-b53c1",
   storageBucket: "tasks-app-b53c1.appspot.com",
